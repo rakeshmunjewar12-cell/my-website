@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Nilesh Insurance</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, #263859 0%, #101827 45%, #070b12 100%);
+      color: #ffffff;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 20px 15px 100px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ================= LOGIN ================= */
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      margin: 70px auto 0;
+      padding: 28px 22px;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #17243b, #0c1220);
+      border: 2px solid #3b82f6;
+      box-shadow:
+        0 0 25px rgba(59,130,246,0.25),
+        0 15px 40px rgba(0,0,0,0.45);
+    }
+
+    .login-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border: 2px solid #60a5fa;
+      font-size: 25px;
+      font-weight: bold;
+      box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+      margin-bottom: 25px;
+    }
+
+    .icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #facc15, #f97316);
+      border: 3px solid #ffffff;
+      font-size: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.35);
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border-radius: 12px;
+      border: 2px solid #334155;
+      background: #0b1220;
+      color: white;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .login-input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56,189,248,0.25);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border: 2px solid #7dd3fc;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #06b6d4, #2563eb);
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 7px 18px rgba(37,99,235,0.35);
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    #loginMessage {
+      margin-top: 15px;
+      color: #fca5a5;
+      font-size: 14px;
+    }
+
+    /* ================= HEADINGS ================= */
+
+    .title-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 5px auto 25px;
+      padding: 12px 18px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #1d4ed8, #7e22ce);
+      border: 2px solid #60a5fa;
+      color: white;
+      font-size: 23px;
+      font-weight: bold;
+      box-shadow:
+        0 8px 25px rgba(0,0,0,0.35),
+        0 0 18px rgba(99,102,241,0.25);
+    }
+
+    .small-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #facc15, #f97316);
+      border: 2px solid white;
+      font-size: 21px;
+    }
+
+    /* ================= MENU ================= */
+
+    .menu-btn {
+      display: block;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto 15px;
+      padding: 14px;
+      border: 2px solid #818cf8;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #312e81, #4c1d95);
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 7px 18px rgba(0,0,0,0.3);
+    }
+
+    #menuOptions {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    /* ================= INFORMATION BOXES ================= */
+
+    .info-box {
+      width: 100%;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 14px;
+      color: white;
+      text-align: left;
+      line-height: 1.55;
+      font-size: 16px;
+      font-weight: 500;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .info-box b {
+      display: inline-block;
+      margin-bottom: 4px;
+      font-size: 17px;
+    }
+
+    .agent-box {
+      background: linear-gradient(135deg, #172554, #1e3a8a);
+      border: 2px solid #3b82f6;
+    }
+
+    .contact-box {
+      background: linear-gradient(135deg, #052e2b, #065f46);
+      border: 2px solid #10b981;
+    }
+
+    .email-box {
+      background: linear-gradient(135deg, #431407, #9a3412);
+      border: 2px solid #fb923c;
+      word-break: break-word;
+    }
+
+    .address-box {
+      background: linear-gradient(135deg, #4a044e, #86198f);
+      border: 2px solid #e879f9;
+    }
+
+    /* ================= GENERAL BUTTONS ================= */
+
+    .option-btn {
+      width: 100%;
+      max-width: 500px;
+      margin: 10px auto;
+      padding: 14px;
+      border: 2px solid;
+      border-radius: 13px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      display: block;
+      box-shadow: 0 7px 18px rgba(0,0,0,0.3);
+    }
+
+    .download-btn {
+      background: linear-gradient(135deg, #047857, #10b981);
+      border-color: #6ee7b7;
+    }
+
+    .internet-btn {
+      background: linear-gradient(135deg, #075985, #0284c7);
+      border-color: #7dd3fc;
+    }
+
+    .next-btn {
+      position: fixed;
+      right: 15px;
+      bottom: 15px;
+      width: auto;
+      min-width: 105px;
+      padding: 11px 18px;
+      margin: 0;
+      background: linear-gradient(135deg, #9333ea, #db2777);
+      border-color: #f0abfc;
+      z-index: 20;
+    }
+
+    .call-btn {
+      background: linear-gradient(135deg, #047857, #059669);
+      border-color: #6ee7b7;
+    }
+
+    .whatsapp-btn {
+      background: linear-gradient(135deg, #15803d, #16a34a);
+      border-color: #86efac;
+    }
+
+    .map-btn {
+      background: linear-gradient(135deg, #b45309, #ea580c);
+      border-color: #fdba74;
+    }
+
+    .back-btn {
+      position: fixed;
+      left: 15px;
+      bottom: 15px;
+      width: auto;
+      min-width: 95px;
+      padding: 10px 17px;
+      margin: 0;
+      background: linear-gradient(135deg, #334155, #475569);
+      border-color: #94a3b8;
+      z-index: 20;
+    }
+
+    .logout-btn {
+      position: fixed;
+      left: 15px;
+      bottom: 65px;
+      width: auto;
+      min-width: 95px;
+      padding: 10px 17px;
+      margin: 0;
+      background: linear-gradient(135deg, #991b1b, #dc2626);
+      border-color: #fca5a5;
+      z-index: 20;
+    }
+
+    /* ================= HOME VEHICLES ================= */
+
+    .vehicle-grid {
+      width: 100%;
+      max-width: 550px;
+      margin: 18px auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .vehicle-box {
+      min-height: 105px;
+      padding: 18px 10px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+      border: 2px solid;
+    }
+
+    .two-wheeler {
+      background: linear-gradient(135deg, #172554, #1d4ed8);
+      border-color: #60a5fa;
+    }
+
+    .four-wheeler {
+      background: linear-gradient(135deg, #312e81, #6d28d9);
+      border-color: #a78bfa;
+    }
+
+    .auto {
+      background: linear-gradient(135deg, #713f12, #d97706);
+      border-color: #fbbf24;
+    }
+
+    .all-vehicles {
+      background: linear-gradient(135deg, #064e3b, #059669);
+      border-color: #6ee7b7;
+    }
+
+    /* ================= MOBILE ================= */
+
+    @media (max-width: 450px) {
+
+      .page {
+        padding: 15px 10px 100px;
+      }
+
+      .title-box {
+        font-size: 20px;
+        padding: 10px 13px;
+      }
+
+      .login-container {
+        margin-top: 35px;
+        padding: 23px 16px;
+      }
+
+      .info-box {
+        font-size: 15px;
+      }
+
+      .vehicle-box {
+        min-height: 95px;
+        font-size: 14px;
+      }
+
+      .next-btn {
+        right: 10px;
+        bottom: 10px;
+      }
+
+      .back-btn {
+        left: 10px;
+        bottom: 10px;
+      }
+
+      .logout-btn {
+        left: 10px;
+        bottom: 58px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ================= LOGIN PAGE ================= -->
+
+  <section id="loginPage" class="page">
+
+    <div class="login-container">
+
+      <div class="login-title">
+        <span class="icon-circle">🛡️</span>
+        Nilesh Insurance
+      </div>
+
+      <input
+        type="email"
+        id="email"
+        class="login-input"
+        placeholder="Email ID"
+        autocomplete="email"
+      >
+
+      <input
+        type="password"
+        id="password"
+        class="login-input"
+        placeholder="Password"
+        autocomplete="current-password"
+      >
+
+      <button class="login-btn" onclick="loginUser()">
+        🔐 Login
+      </button>
+
+      <p id="loginMessage"></p>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= FIRST PAGE ================= -->
+
+  <section id="firstPage" class="page hidden">
+
+    <div class="title-box">
+      <span class="small-logo">🛡️</span>
+      <span>No.1) Nilesh Insurance</span>
+    </div>
+
+    <button class="menu-btn" onclick="toggleMenu()">
+      ☰ Menu
+    </button>
+
+    <div id="menuOptions" class="hidden">
+
+      <div class="info-box agent-box">
+        <b>👤 Agent Name</b><br>
+        Nilesh Mute
+      </div>
+
+      <div class="info-box contact-box">
+        <b>📞 Contact No.</b><br>
+        8983212161
+      </div>
+
+      <div class="info-box email-box">
+        <b>📧 Email ID</b><br>
+        nileshmute@rediffmail.com
+      </div>
+
+      <!-- SAME ADDRESS USED FOR GOOGLE MAP -->
+      <div class="info-box address-box">
+        <b>📍 Address</b><br>
+        Indian Oil Petrol Pump,<br>
+        Near Haldiram Hotel,<br>
+        Padole Square,<br>
+        Pratap Nagar,<br>
+        Nagpur, Maharashtra
+      </div>
+
+    </div>
+
+    <button class="option-btn download-btn" onclick="openHome()">
+      ⬇️ Download
+    </button>
+
+    <button class="option-btn internet-btn" onclick="openInternet()">
+      🌐 Internet
+    </button>
+
+    <button class="option-btn next-btn" onclick="openHome()">
+      Next ➜
+    </button>
+
+  </section>
+
+
+  <!-- ================= HOME PAGE ================= -->
+
+  <section id="homePage" class="page hidden">
+
+    <div class="title-box">
+      <span class="small-logo">🛡️</span>
+      <span>Nilesh Insurance</span>
+    </div>
+
+    <button class="option-btn call-btn" onclick="callAgent()">
+      📞 Contact No.
+    </button>
+
+    <button class="option-btn whatsapp-btn" onclick="openWhatsApp()">
+      💬 WhatsApp Chat
+    </button>
+
+    <!-- GOOGLE MAP BUTTON -->
+    <button class="option-btn map-btn" onclick="openMap()">
+      📍 Google Map
+    </button>
+
+    <div class="vehicle-grid">
+
+      <div class="vehicle-box two-wheeler">
+        🏍️<br>
+        2 Wheeler
+      </div>
+
+      <div class="vehicle-box four-wheeler">
+        🚗<br>
+        4 Wheeler
+      </div>
+
+      <div class="vehicle-box auto">
+        🛺<br>
+        Auto
+      </div>
+
+      <div class="vehicle-box all-vehicles">
+        🚘<br>
+        All Type Vehicles
+      </div>
+
+    </div>
+
+    <button class="option-btn back-btn" onclick="goBack()">
+      ← Back
+    </button>
+
+    <button class="option-btn logout-btn" onclick="logoutUser()">
+      🚪 Logout
+    </button>
+
+  </section>
+
+
+  <!-- ================= JAVASCRIPT ================= -->
+
+  <script>
+
+    /* ================= FIREBASE CONFIG ================= */
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9giNCdHrooAKzN45RZO_5XsPa2GOuZ20",
+      authDomain: "myapp-bc69a.firebaseapp.com",
+      projectId: "myapp-bc69a",
+      storageBucket: "myapp-bc69a.firebasestorage.app",
+      messagingSenderId: "755119343140",
+      appId: "1:755119343140:web:52521797880540fb13bab1",
+      measurementId: "G-47575MWLVF"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const auth = firebase.auth();
+
+
+    /* ================= COMMON ADDRESS ================= */
+
+    const officeAddress =
+      "Indian Oil Petrol Pump, Near Haldiram Hotel, Padole Square, Pratap Nagar, Nagpur, Maharashtra";
+
+
+    /* ================= PAGE REFERENCES ================= */
+
+    const loginPage =
+      document.getElementById("loginPage");
+
+    const firstPage =
+      document.getElementById("firstPage");
+
+    const homePage =
+      document.getElementById("homePage");
+
+    const loginMessage =
+      document.getElementById("loginMessage");
+
+
+    /* ================= FIREBASE AUTH STATE ================= */
+
+    auth.onAuthStateChanged(function(user) {
+
+      if (user) {
+
+        loginPage.classList.add("hidden");
+        firstPage.classList.remove("hidden");
+        homePage.classList.add("hidden");
+
+      } else {
+
+        loginPage.classList.remove("hidden");
+        firstPage.classList.add("hidden");
+        homePage.classList.add("hidden");
+
+      }
+
+    });
+
+
+    /* ================= LOGIN ================= */
+
+    function loginUser() {
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+      loginMessage.textContent = "";
+
+      if (!email || !password) {
+
+        loginMessage.textContent =
+          "Please enter Email ID and Password.";
+
+        return;
+      }
+
+      auth
+        .signInWithEmailAndPassword(email, password)
+
+        .then(function() {
+
+          loginMessage.textContent = "";
+
+        })
+
+        .catch(function(error) {
+
+          loginMessage.textContent =
+            "Login failed: " + error.message;
+
+        });
+
+    }
+
+
+    /* ================= LOGOUT ================= */
+
+    function logoutUser() {
+
+      auth.signOut()
+
+        .then(function() {
+
+          document.getElementById("email").value = "";
+          document.getElementById("password").value = "";
+
+        })
+
+        .catch(function(error) {
+
+          alert("Logout failed: " + error.message);
+
+        });
+
+    }
+
+
+    /* ================= MENU ================= */
+
+    function toggleMenu() {
+
+      const menu =
+        document.getElementById("menuOptions");
+
+      menu.classList.toggle("hidden");
+
+    }
+
+
+    /* ================= OPEN HOME ================= */
+
+    function openHome() {
+
+      firstPage.classList.add("hidden");
+      homePage.classList.remove("hidden");
+
+      window.scrollTo(0, 0);
+
+    }
+
+
+    /* ================= BACK ================= */
+
+    function goBack() {
+
+      homePage.classList.add("hidden");
+      firstPage.classList.remove("hidden");
+
+      window.scrollTo(0, 0);
+
+    }
+
+
+    /* ================= CONTACT ================= */
+
+    function callAgent() {
+
+      window.location.href =
+        "tel:8983212161";
+
+    }
+
+
+    /* ================= WHATSAPP ================= */
+
+    function openWhatsApp() {
+
+      window.open(
+        "https://wa.me/918983212161",
+        "_blank"
+      );
+
+    }
+
+
+    /* ================= GOOGLE MAP ================= */
+
+    function openMap() {
+
+      const googleMapURL =
+        "https://www.google.com/maps/search/?api=1&query=" +
+        encodeURIComponent(officeAddress);
+
+      window.open(
+        googleMapURL,
+        "_blank"
+      );
+
+    }
+
+
+    /* ================= INTERNET ================= */
+
+    function openInternet() {
+
+      window.open(
+        "https://www.google.com",
+        "_blank"
+      );
+
+    }
+
+
+    /* ================= ENTER KEY LOGIN ================= */
+
+    document
+      .getElementById("password")
+      .addEventListener("keypress", function(event) {
+
+        if (event.key === "Enter") {
+          loginUser();
+        }
+
+      });
+
+  </script>
+
+</body>
+</html>
